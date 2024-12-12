@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-struct ExpenseItem: Identifiable, Codable {
+struct ExpenseItem: Identifiable, Codable, Equatable {
   var id = UUID()
   let name: String
   let type: String
@@ -19,6 +19,14 @@ class Expenses {
         UserDefaults.standard.set(encoded, forKey: "Items")
       }
     }
+  }
+
+  var personalItems: [ExpenseItem] {
+    items.filter { $0.type == "Personal" }
+  }
+
+  var businessItems: [ExpenseItem] {
+    items.filter { $0.type == "Business" }
   }
 
   init() {
@@ -39,21 +47,40 @@ struct ContentView: View {
   var body: some View {
     NavigationStack {
       List {
-        ForEach(expenses.items) { item in
-          HStack {
-            VStack(alignment: .leading) {
-              Text(item.name)
-                .font(.headline)
-              Text(item.type)
-                .font(.subheadline)
+        Section(header: Text("Personal")) {
+          ForEach(expenses.personalItems) { item in
+            HStack {
+              VStack(alignment: .leading) {
+                Text(item.name)
+                  .font(.headline)
+                Text(item.type)
+                  .font(.subheadline)
+              }
+              Spacer()
+              Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                .font(item.amount < 10 ? .footnote : item.amount < 100 ? .subheadline : .headline)
+                .foregroundStyle(item.amount < 10 ? .green : item.amount < 100 ? .yellow : .red)
             }
-            Spacer()
-            Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-              .font(item.amount < 10 ? .footnote : item.amount < 100 ? .subheadline : .headline)
-              .foregroundStyle(item.amount < 10 ? .green : item.amount < 100 ? .yellow : .red)
           }
+          .onDelete(perform: removePersonalItems)
         }
-        .onDelete(perform: removeItems)
+        Section(header: Text("Business")) {
+          ForEach(expenses.businessItems) { item in
+            HStack {
+              VStack(alignment: .leading) {
+                Text(item.name)
+                  .font(.headline)
+                Text(item.type)
+                  .font(.subheadline)
+              }
+              Spacer()
+              Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                .font(item.amount < 10 ? .footnote : item.amount < 100 ? .subheadline : .headline)
+                .foregroundStyle(item.amount < 10 ? .green : item.amount < 100 ? .yellow : .red)
+            }
+          }
+          .onDelete(perform: removeBusinessItems)
+        }
       }
       .navigationTitle("iExpense")
       .toolbar {
@@ -67,8 +94,26 @@ struct ContentView: View {
     }
   }
 
-  func removeItems(at offsets: IndexSet) {
-    expenses.items.remove(atOffsets: offsets)
+  func removeItems(at offsets: IndexSet, in inputArray: [ExpenseItem]) {
+    var objectsToDelete = IndexSet()
+
+    for offset in offsets {
+      let item = inputArray[offset]
+
+      if let index = expenses.items.firstIndex(of: item) {
+        objectsToDelete.insert(index)
+      }
+    }
+
+    expenses.items.remove(atOffsets: objectsToDelete)
+  }
+
+  func removePersonalItems(at offsets: IndexSet) {
+    removeItems(at: offsets, in: expenses.personalItems)
+  }
+
+  func removeBusinessItems(at offsets: IndexSet) {
+    removeItems(at: offsets, in: expenses.businessItems)
   }
 }
 
