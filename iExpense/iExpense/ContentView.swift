@@ -10,7 +10,14 @@ struct ExpenseItem {
   let amount: Double
 }
 
+@Observable
+class Expenses {
+  var items = [ExpenseItem]()
+}
+
 struct ContentView: View {
+  @State private var expenses = Expenses()
+
   var body: some View {
     VStack {
       Image(systemName: "globe")
