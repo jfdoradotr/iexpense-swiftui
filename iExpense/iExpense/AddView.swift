@@ -24,6 +24,7 @@ struct AddView: View {
           .keyboardType(.decimalPad)
       }
       .navigationTitle("Add New Expense")
+      .navigationBarTitleDisplayMode(.inline)
     }
   }
 }
