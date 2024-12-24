@@ -5,13 +5,21 @@
 import SwiftUI
 
 struct ContentView: View {
-  @State private var expenses = Expenses()
+  @State private var items = [ExpenseItem]()
+
+  var personalItems: [ExpenseItem] {
+    items.filter { $0.type == "Personal" }
+  }
+
+  var businessItems: [ExpenseItem] {
+    items.filter { $0.type == "Business" }
+  }
 
   var body: some View {
     NavigationStack {
       List {
         Section(header: Text("Personal")) {
-          ForEach(expenses.personalItems) { item in
+          ForEach(personalItems) { item in
             HStack {
               VStack(alignment: .leading) {
                 Text(item.name)
@@ -28,7 +36,7 @@ struct ContentView: View {
           .onDelete(perform: removePersonalItems)
         }
         Section(header: Text("Business")) {
-          ForEach(expenses.businessItems) { item in
+          ForEach(businessItems) { item in
             HStack {
               VStack(alignment: .leading) {
                 Text(item.name)
@@ -48,7 +56,7 @@ struct ContentView: View {
       .navigationTitle("iExpense")
       .toolbar {
         NavigationLink {
-          AddView(expenses: expenses)
+          AddView(items: $items)
         } label: {
             Image(systemName: "plus")
         }
@@ -62,20 +70,20 @@ struct ContentView: View {
     for offset in offsets {
       let item = inputArray[offset]
 
-      if let index = expenses.items.firstIndex(of: item) {
+      if let index = items.firstIndex(of: item) {
         objectsToDelete.insert(index)
       }
     }
 
-    expenses.items.remove(atOffsets: objectsToDelete)
+    items.remove(atOffsets: objectsToDelete)
   }
 
   func removePersonalItems(at offsets: IndexSet) {
-    removeItems(at: offsets, in: expenses.personalItems)
+    removeItems(at: offsets, in: personalItems)
   }
 
   func removeBusinessItems(at offsets: IndexSet) {
-    removeItems(at: offsets, in: expenses.businessItems)
+    removeItems(at: offsets, in: businessItems)
   }
 }
 
