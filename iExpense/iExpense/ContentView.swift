@@ -9,27 +9,30 @@ struct ContentView: View {
   @Environment(\.modelContext) var modelContext
   @Query private var items: [Expense]
 
-  var personalItems: [Expense] {
-    items.filter { $0.type == "Personal" }
-  }
-
-  var businessItems: [Expense] {
-    items.filter { $0.type == "Business" }
-  }
-
   var body: some View {
     NavigationStack {
       List {
-        SectionView(
-          name: "Personal",
-          items: personalItems,
-          onDelete: removePersonalItems
-        )
-        SectionView(
-          name: "Business",
-          items: businessItems,
-          onDelete: removeBusinessItems
-        )
+        Section {
+          ForEach(items) { item in
+            HStack {
+              VStack(alignment: .leading, spacing: 5) {
+                Text(item.name)
+                  .font(.headline)
+                HStack(spacing: 5) {
+                  Image(systemName: item.typeImageName)
+                  Text(item.type)
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+              }
+              Spacer()
+              Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                .font(item.amount < 10 ? .footnote : item.amount < 100 ? .subheadline : .headline)
+                .foregroundStyle(item.amount < 10 ? .green : item.amount < 100 ? .yellow : .red)
+            }
+          }
+          .onDelete(perform: removeExpenses)
+        }
       }
       .navigationTitle("iExpense")
       .toolbar {
@@ -42,19 +45,11 @@ struct ContentView: View {
     }
   }
 
-  func removeItems(at offsets: IndexSet, in inputArray: [Expense]) {
+  func removeExpenses(at offsets: IndexSet) {
     for offset in offsets {
-      let item = inputArray[offset]
+      let item = items[offset]
       modelContext.delete(item)
     }
-  }
-
-  func removePersonalItems(at offsets: IndexSet) {
-    removeItems(at: offsets, in: personalItems)
-  }
-
-  func removeBusinessItems(at offsets: IndexSet) {
-    removeItems(at: offsets, in: businessItems)
   }
 }
 
@@ -73,7 +68,7 @@ private extension ContentView {
             VStack(alignment: .leading) {
               Text(item.name)
                 .font(.headline)
-              Text(item.type)
+              Image(systemName: item.typeImageName)
                 .font(.subheadline)
             }
             Spacer()

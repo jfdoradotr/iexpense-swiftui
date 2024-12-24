@@ -12,6 +12,14 @@ class Expense {
   var type: String
   var amount: Double
 
+  var typeImageName: String {
+    switch type {
+    case "Business": return "building.fill"
+    case "Personal": return "person.fill"
+    default: return "questionmark.app.fill"
+    }
+  }
+
   init(id: UUID = UUID(), name: String, type: String, amount: Double) {
     self.id = id
     self.name = name
