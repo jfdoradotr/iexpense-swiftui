@@ -2,10 +2,12 @@
 // Copyright © Juan Francisco Dorado Torres. All rights reserved.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-  @State private var items = [Expense]()
+  @Environment(\.modelContext) var modelContext
+  @Query private var items: [Expense]
 
   var personalItems: [Expense] {
     items.filter { $0.type == "Personal" }
@@ -65,17 +67,10 @@ struct ContentView: View {
   }
 
   func removeItems(at offsets: IndexSet, in inputArray: [Expense]) {
-    var objectsToDelete = IndexSet()
-
     for offset in offsets {
       let item = inputArray[offset]
-
-      if let index = items.firstIndex(of: item) {
-        objectsToDelete.insert(index)
-      }
+      modelContext.delete(item)
     }
-
-    items.remove(atOffsets: objectsToDelete)
   }
 
   func removePersonalItems(at offsets: IndexSet) {
