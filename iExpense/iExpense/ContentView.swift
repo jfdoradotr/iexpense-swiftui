@@ -56,7 +56,7 @@ struct ContentView: View {
       .navigationTitle("iExpense")
       .toolbar {
         NavigationLink {
-          AddView(items: $items)
+          AddView()
         } label: {
             Image(systemName: "plus")
         }
