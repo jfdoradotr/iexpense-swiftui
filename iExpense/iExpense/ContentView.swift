@@ -20,40 +20,16 @@ struct ContentView: View {
   var body: some View {
     NavigationStack {
       List {
-        Section(header: Text("Personal")) {
-          ForEach(personalItems) { item in
-            HStack {
-              VStack(alignment: .leading) {
-                Text(item.name)
-                  .font(.headline)
-                Text(item.type)
-                  .font(.subheadline)
-              }
-              Spacer()
-              Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                .font(item.amount < 10 ? .footnote : item.amount < 100 ? .subheadline : .headline)
-                .foregroundStyle(item.amount < 10 ? .green : item.amount < 100 ? .yellow : .red)
-            }
-          }
-          .onDelete(perform: removePersonalItems)
-        }
-        Section(header: Text("Business")) {
-          ForEach(businessItems) { item in
-            HStack {
-              VStack(alignment: .leading) {
-                Text(item.name)
-                  .font(.headline)
-                Text(item.type)
-                  .font(.subheadline)
-              }
-              Spacer()
-              Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                .font(item.amount < 10 ? .footnote : item.amount < 100 ? .subheadline : .headline)
-                .foregroundStyle(item.amount < 10 ? .green : item.amount < 100 ? .yellow : .red)
-            }
-          }
-          .onDelete(perform: removeBusinessItems)
-        }
+        SectionView(
+          name: "Personal",
+          items: personalItems,
+          onDelete: removePersonalItems
+        )
+        SectionView(
+          name: "Business",
+          items: businessItems,
+          onDelete: removeBusinessItems
+        )
       }
       .navigationTitle("iExpense")
       .toolbar {
@@ -81,6 +57,38 @@ struct ContentView: View {
     removeItems(at: offsets, in: businessItems)
   }
 }
+
+// MARK: - SectionView
+
+private extension ContentView {
+  struct SectionView: View {
+    let name: String
+    let items: [Expense]
+    let onDelete: (IndexSet) -> Void
+
+    var body: some View {
+      Section(header: Text(name)) {
+        ForEach(items) { item in
+          HStack {
+            VStack(alignment: .leading) {
+              Text(item.name)
+                .font(.headline)
+              Text(item.type)
+                .font(.subheadline)
+            }
+            Spacer()
+            Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+              .font(item.amount < 10 ? .footnote : item.amount < 100 ? .subheadline : .headline)
+              .foregroundStyle(item.amount < 10 ? .green : item.amount < 100 ? .yellow : .red)
+          }
+        }
+        .onDelete(perform: onDelete)
+      }
+    }
+  }
+}
+
+// MARK: - Previews
 
 #Preview {
   ContentView()
