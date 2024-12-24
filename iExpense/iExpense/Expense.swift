@@ -6,7 +6,7 @@ import Foundation
 import SwiftData
 
 @Model
-class ExpenseItem {
+class Expense {
   var id: UUID
   var name: String
   var type: String

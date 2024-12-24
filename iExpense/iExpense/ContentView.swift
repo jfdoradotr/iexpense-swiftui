@@ -5,13 +5,13 @@
 import SwiftUI
 
 struct ContentView: View {
-  @State private var items = [ExpenseItem]()
+  @State private var items = [Expense]()
 
-  var personalItems: [ExpenseItem] {
+  var personalItems: [Expense] {
     items.filter { $0.type == "Personal" }
   }
 
-  var businessItems: [ExpenseItem] {
+  var businessItems: [Expense] {
     items.filter { $0.type == "Business" }
   }
 
@@ -64,7 +64,7 @@ struct ContentView: View {
     }
   }
 
-  func removeItems(at offsets: IndexSet, in inputArray: [ExpenseItem]) {
+  func removeItems(at offsets: IndexSet, in inputArray: [Expense]) {
     var objectsToDelete = IndexSet()
 
     for offset in offsets {
