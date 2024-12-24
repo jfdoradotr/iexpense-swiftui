@@ -18,25 +18,33 @@ struct ContentView: View {
         .navigationTitle("iExpense")
         .toolbar {
           Menu {
-            Picker("Sort", selection: $sortOrder) {
-              Text("Sort by Name")
-                .tag([
-                  SortDescriptor(\Expense.name),
-                  SortDescriptor(\Expense.amount)
-                ])
-              Text("Sort by Amount")
-                .tag([
-                  SortDescriptor(\Expense.amount),
-                  SortDescriptor(\Expense.name)
-                ])
+            Menu {
+              Picker("Sort", selection: $sortOrder) {
+                Text("By Name")
+                  .tag([
+                    SortDescriptor(\Expense.name),
+                    SortDescriptor(\Expense.amount)
+                  ])
+                Text("By Amount")
+                  .tag([
+                    SortDescriptor(\Expense.amount),
+                    SortDescriptor(\Expense.name)
+                  ])
+              }
+            } label: {
+              Label("Sort", systemImage: "arrow.up.arrow.down")
             }
-            Picker("View", selection: $viewBy) {
-              Text("All")
-                .tag(ExpensesView.ViewBy.all)
-              Text("Personal")
-                .tag(ExpensesView.ViewBy.personal)
-              Text("Business")
-                .tag(ExpensesView.ViewBy.business)
+            Menu {
+              Picker("View", selection: $viewBy) {
+                Text("All")
+                  .tag(ExpensesView.ViewBy.all)
+                Text("Personal")
+                  .tag(ExpensesView.ViewBy.personal)
+                Text("Business")
+                  .tag(ExpensesView.ViewBy.business)
+              }
+            } label: {
+              Label("View", systemImage: "eye.fill")
             }
           } label: {
             Label("Sort", systemImage: "slider.horizontal.3")
