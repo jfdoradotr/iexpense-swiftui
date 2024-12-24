@@ -80,11 +80,15 @@ private extension ContentView {
         Section {
           ForEach(expenses) { expense in
             HStack {
-              VStack(alignment: .leading) {
+              VStack(alignment: .leading, spacing: 5) {
                 Text(expense.name)
                   .font(.headline)
-                Image(systemName: expense.typeImageName)
-                  .font(.subheadline)
+                HStack {
+                  Image(systemName: expense.typeImageName)
+                  Text(expense.type)
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
               }
               Spacer()
               Text(expense.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
