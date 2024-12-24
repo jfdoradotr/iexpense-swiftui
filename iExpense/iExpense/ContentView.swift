@@ -10,10 +10,11 @@ struct ContentView: View {
     SortDescriptor(\Expense.name),
     SortDescriptor(\Expense.amount)
   ]
+  @State private var viewBy: ExpensesView.ViewBy = .all
 
   var body: some View {
     NavigationStack {
-      ExpensesView(sortOrder: sortOrder)
+      ExpensesView(sortOrder: sortOrder, viewBy: viewBy)
         .navigationTitle("iExpense")
         .toolbar {
           Menu {
@@ -29,8 +30,16 @@ struct ContentView: View {
                   SortDescriptor(\Expense.name)
                 ])
             }
+            Picker("View", selection: $viewBy) {
+              Text("All")
+                .tag(ExpensesView.ViewBy.all)
+              Text("Personal")
+                .tag(ExpensesView.ViewBy.personal)
+              Text("Business")
+                .tag(ExpensesView.ViewBy.business)
+            }
           } label: {
-            Label("Sort", systemImage: "arrow.up.arrow.down")
+            Label("Sort", systemImage: "slider.horizontal.3")
           }
           NavigationLink {
             AddView()
@@ -51,6 +60,12 @@ private extension ContentView {
     @Environment(\.modelContext) var modelContext
 
     @Query var expenses: [Expense]
+
+    enum ViewBy: String, CaseIterable {
+      case all = "All"
+      case personal = "Personal"
+      case business = "Business"
+    }
 
     var body: some View {
       List {
@@ -74,8 +89,20 @@ private extension ContentView {
       }
     }
 
-    init(sortOrder: [SortDescriptor<Expense>]) {
-      _expenses = Query(sort: sortOrder)
+    init(sortOrder: [SortDescriptor<Expense>], viewBy: ViewBy) {
+      let filter: Predicate<Expense>
+      switch viewBy {
+      case .all:
+        filter = #Predicate<Expense> { _ in true }
+      case .personal:
+        filter = #Predicate<Expense> { expense in expense.type == "Personal" }
+      case .business:
+        filter = #Predicate<Expense> { expense in expense.type == "Business" }
+      }
+      _expenses = Query(
+        filter: filter,
+        sort: sortOrder
+      )
     }
 
     private func removeExpenses(at offsets: IndexSet) {
