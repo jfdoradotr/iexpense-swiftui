@@ -95,6 +95,9 @@ private extension ContentView {
                 .font(expense.amount < 10 ? .footnote : expense.amount < 100 ? .subheadline : .headline)
                 .foregroundStyle(expense.amount < 10 ? .green : expense.amount < 100 ? .yellow : .red)
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(expense.name), $\(expense.amount)")
+            .accessibilityHint("\(expense.type) expense")
           }
           .onDelete(perform: removeExpenses)
         }
